@@ -49,12 +49,13 @@ public class MainActivity extends Activity implements OnClickListener {
 			try {
 				doc = Jsoup
 						.connect(
-								"http://172.26.142.68/examscheduler2/personal_schedule.php?rollno=12604")
+								"http://172.26.142.68/examscheduler2/personal_schedule.php?rollno=12751")
 						.get();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			
 
 			Elements tablerows = doc.select("tr");
 			for (Element row : tablerows) {
@@ -65,6 +66,7 @@ public class MainActivity extends Activity implements OnClickListener {
 				cname = tds.get(0).text();
 				schedule = tds.get(1).text();
 				time = tds.get(2).text();
+				
 				breakschedule();
 				breaktime();
 				ExamDatabase entry = new ExamDatabase(MainActivity.this);
@@ -75,17 +77,22 @@ public class MainActivity extends Activity implements OnClickListener {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				entry.close();
 			}
+			ExamDatabase entry = new ExamDatabase(MainActivity.this);
+			entry.open();
+			String data= entry.getdata();
+			entry.close();
+			t.setText(data);
 			break;
 		}
 
 	}
 
 	public void breakschedule() {
-
+		date="";day="";
 		int j = 0, k = 0;
-		while (!((schedule.charAt(j) >= '0' && schedule.charAt(j) <= '9') || schedule
-				.charAt(j) == 'N')) {
+		while (!((schedule.charAt(j) >= '0' && schedule.charAt(j) <= '9') || schedule.charAt(j) == 'N')) {
 			j++;
 		}
 		if (schedule.charAt(j) == 'N')
@@ -110,9 +117,9 @@ public class MainActivity extends Activity implements OnClickListener {
 
 	public void breaktime() {
 
+		st="";et="";
 		int p = 0;
-		while (!((time.charAt(p) >= '0' && time.charAt(p) <= '9') || time
-				.charAt(p) == 'N')) {
+		while (!((time.charAt(p) >= '0' && time.charAt(p) <= '9') || time.charAt(p) == 'N')) {
 			p++;
 		}
 		if (time.charAt(p) == 'N') {
@@ -122,6 +129,7 @@ public class MainActivity extends Activity implements OnClickListener {
 
 			while (time.charAt(p) != '-') {
 				st = st + time.charAt(p);
+				p++;
 			}
 			while (!(time.charAt(p) >= '0' && time.charAt(p) <= '9')) {
 				p++;
@@ -129,6 +137,7 @@ public class MainActivity extends Activity implements OnClickListener {
 
 			while (p < time.length()) {
 				et = et + time.charAt(p);
+				p++;
 			}
 		}
 	}
